@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Workday Autopilot — popup UI</title>
+<style>
+  :root { --accent: #dc2626; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; display: grid; place-items: center;
+    background: radial-gradient(circle at 30% 20%, #eef2ff, #e2e8f0 60%, #cbd5e1);
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: #1e293b; padding: 40px;
+  }
+  .browser {
+    width: 420px; border-radius: 12px; overflow: hidden;
+    box-shadow: 0 30px 60px -15px rgba(15,23,42,.45), 0 0 0 1px rgba(15,23,42,.06);
+    background: #fff;
+  }
+  .chrome-bar {
+    display: flex; align-items: center; gap: 8px; padding: 10px 14px;
+    background: #f1f3f4; border-bottom: 1px solid #e2e5e9;
+  }
+  .dot { width: 12px; height: 12px; border-radius: 50%; }
+  .dot.r { background: #ff5f57; } .dot.y { background: #febc2e; } .dot.g { background: #28c840; }
+  .omni {
+    flex: 1; margin-left: 8px; background: #fff; border-radius: 14px;
+    padding: 5px 12px; font-size: 12px; color: #5f6368; border: 1px solid #e2e5e9;
+  }
+  .puzzle { font-size: 15px; opacity: .6; }
+  .popup { width: 360px; margin: 22px auto; border-radius: 12px; overflow: hidden;
+    border: 1px solid #e2e8f0; box-shadow: 0 10px 30px -10px rgba(15,23,42,.25); background:#fff; }
+  header.ext {
+    display: flex; align-items: center; gap: 12px; padding: 14px 16px;
+    background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 65%, #000));
+    color: #fff;
+  }
+  .icon {
+    width: 38px; height: 38px; border-radius: 9px; background: rgba(255,255,255,.22);
+    display: grid; place-items: center; font-weight: 700; font-size: 15px; letter-spacing: .5px;
+    border: 1px solid rgba(255,255,255,.35);
+  }
+  .ext-name { font-size: 16px; font-weight: 700; line-height: 1.1; }
+  .ext-desc { font-size: 11px; opacity: .9; margin-top: 2px; }
+  main { padding: 16px; }
+  .field-label { font-size: 11px; text-transform: uppercase; letter-spacing: .6px;
+    color: #64748b; font-weight: 600; margin: 12px 0 6px; }
+  .field-label:first-child { margin-top: 0; }
+  .page-card, .profile-card, .selector-card, .preview-card {
+    border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 12px; background: #f8fafc; }
+  .page-title { font-weight: 600; font-size: 13px; }
+  .page-url { font-size: 11px; color: #2563eb; margin-top: 3px; word-break: break-all; }
+  .code-out { background: #0f172a; color: #e2e8f0; border-radius: 8px; padding: 10px 12px;
+    font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 11px; white-space: pre-wrap;
+    word-break: break-word; margin: 0; }
+  .primary-btn { width: 100%; margin-top: 14px; padding: 10px; border: none; border-radius: 8px;
+    background: var(--accent); color: #fff; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .primary-btn:hover { filter: brightness(1.07); }
+  .hint { font-size: 11px; color: #94a3b8; margin-top: 8px; text-align: center; }
+  .rows { display: flex; flex-direction: column; gap: 6px; }
+  .row { display: flex; align-items: center; gap: 8px; font-size: 12px; padding: 7px 9px;
+    border: 1px solid #e2e8f0; border-radius: 7px; background: #fff; }
+  .row .tag { font-weight: 600; color: #475569; min-width: 78px; }
+  .row .val { flex: 1; color: #334155; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .row .status { font-size: 11px; font-weight: 600; color: #16a34a; }
+  .row.warn { background: #fffbeb; border-color: #fde68a; }
+  .status.bad { color: #d97706; }
+  .seg, .dest { display: flex; gap: 6px; }
+  .seg-btn, .dest-btn { flex: 1; padding: 7px; border: 1px solid #cbd5e1; background: #fff;
+    border-radius: 7px; font-size: 12px; cursor: pointer; }
+  .seg-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .dest-btn { font-size: 11px; }
+  .quote { border-left: 3px solid var(--accent); background: #f8fafc; padding: 8px 12px;
+    font-size: 12px; font-style: italic; color: #475569; border-radius: 0 6px 6px 0; }
+  .score-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; text-align: center;
+    margin-bottom: 14px; }
+  .score span { font-size: 10px; color: #64748b; display: block; margin-top: 5px; }
+  .ring { width: 50px; height: 50px; margin: 0 auto; border-radius: 50%; display: grid;
+    place-items: center; font-weight: 700; font-size: 15px; color: #fff; }
+  .s-green { background: conic-gradient(#16a34a 88%, #e2e8f0 0); }
+  .s-amber { background: conic-gradient(#d97706 70%, #e2e8f0 0); }
+  .s-green, .s-amber { position: relative; }
+  .ring { color: #0f172a; }
+  .preview-card { padding: 0; overflow: hidden; margin-top: 10px; }
+  .preview-img { height: 110px; background: repeating-linear-gradient(45deg,#e2e8f0,#e2e8f0 10px,#eef2f7 10px,#eef2f7 20px);
+    display: grid; place-items: center; color: #94a3b8; font-size: 12px; }
+  .preview-meta { padding: 10px 12px; }
+  .preview-host { font-size: 10px; text-transform: uppercase; color: #94a3b8; }
+  .preview-title { font-weight: 600; font-size: 13px; margin: 2px 0; }
+  .preview-desc { font-size: 11px; color: #64748b; }
+  .devtools-bar { background: #1e293b; color: #cbd5e1; font-size: 11px; padding: 6px 10px;
+    border-radius: 6px; margin-bottom: 10px; font-family: monospace; }
+  .diff-heads { display: flex; gap: 8px; font-size: 11px; margin-bottom: 8px; }
+  .diff-head { flex: 1; color: #475569; font-family: monospace; }
+  .env { display: inline-block; padding: 1px 6px; border-radius: 4px; color: #fff; font-weight: 600; margin-right: 4px; }
+  .env.staging { background: #d97706; } .env.prod { background: #16a34a; }
+  .diff { background: #0f172a; border-radius: 8px; padding: 10px; font-family: monospace;
+    font-size: 11px; margin: 0; line-height: 1.5; }
+  .diff .ctx { color: #94a3b8; } .diff .add { color: #4ade80; } .diff .del { color: #f87171; }
+  .diff-stat { font-size: 11px; color: #64748b; margin-top: 8px; text-align: center; }
+  .selector-card { display: flex; justify-content: space-between; align-items: center; }
+  .selector-card code { font-size: 11px; color: var(--accent); }
+  .count { font-size: 10px; background: #e0f2fe; color: #0369a1; padding: 2px 7px; border-radius: 10px; }
+  table.scrape { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 4px; }
+  table.scrape th { text-align: left; color: #64748b; font-size: 10px; text-transform: uppercase;
+    border-bottom: 1px solid #e2e8f0; padding: 5px 6px; }
+  table.scrape td { padding: 6px; border-bottom: 1px solid #f1f5f9; }
+  .sev { font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; color: #fff; min-width: 60px; text-align:center; }
+  .sev.crit { background: #dc2626; } .sev.serious { background: #ea580c; }
+  .sev.mod { background: #d97706; } .sev.pass { background: #16a34a; }
+  .annotate-note, .byok { font-size: 11px; color: #475569; background: #f1f5f9; border-radius: 7px;
+    padding: 8px 10px; margin-top: 10px; text-align: center; }
+  .avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--accent); color: #fff;
+    display: grid; place-items: center; font-weight: 700; font-size: 12px; }
+  .profile-card { display: flex; align-items: center; gap: 10px; }
+  .profile-name { font-weight: 600; font-size: 13px; }
+  .profile-sub { font-size: 11px; color: #64748b; }
+  .fill-list { display: flex; flex-direction: column; gap: 5px; }
+  .fill-row { display: flex; justify-content: space-between; font-size: 12px; padding: 6px 9px;
+    border: 1px solid #e2e8f0; border-radius: 6px; }
+  .filled { color: #16a34a; font-weight: 600; }
+  .progress { height: 8px; background: #e2e8f0; border-radius: 5px; overflow: hidden; }
+  .progress .bar { height: 100%; background: var(--accent); }
+  .steps { display: flex; flex-direction: column; gap: 4px; margin: 10px 0; font-size: 12px; }
+  .step { padding: 6px 9px; border-radius: 6px; color: #94a3b8; }
+  .step.done { color: #16a34a; } .step.active { color: #0f172a; font-weight: 600; background: #f1f5f9; }
+  .perms { margin: 16px; padding-top: 12px; border-top: 1px dashed #e2e8f0; }
+  .perms-label { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: .6px;
+    color: #94a3b8; margin-bottom: 6px; }
+  .perm { display: inline-block; font-size: 10px; background: #f1f5f9; color: #475569;
+    border-radius: 10px; padding: 2px 8px; margin: 2px; font-family: monospace; }
+  .footer { text-align: center; font-size: 10px; color: #94a3b8; padding: 0 0 14px; }
+</style>
+</head>
+<body>
+  <div class="browser">
+    <div class="chrome-bar">
+      <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+      <span class="omni">🔒 chrome-extension://lekohbfdhoiclchebepdokpmaafiolll/popup.html</span>
+      <span class="puzzle">🧩</span>
+    </div>
+    <div class="popup">
+      <header class="ext">
+        <div class="icon">WA</div>
+        <div>
+          <div class="ext-name">Workday Autopilot</div>
+          <div class="ext-desc">Auto-fill and auto-submit Workday job applications. One click, done.</div>
+        </div>
+      </header>
+      <main>
+        
+      <div class="field-label">Application progress</div>
+      <div class="progress"><div class="bar" style="width:80%"></div></div>
+      <div class="steps">
+        <div class="step done">✓ My Information</div>
+        <div class="step done">✓ Experience</div>
+        <div class="step done">✓ Education</div>
+        <div class="step active">▶ Voluntary Disclosures</div>
+        <div class="step">Review &amp; Submit</div>
+      </div>
+      <div class="rows">
+        <div class="row"><span class="tag">Profile</span><span class="val">Senior Engineer · 6 yrs</span></div>
+        <div class="row"><span class="tag">Filled</span><span class="val"><b>38</b> fields auto-completed</span></div>
+      </div>
+      <div class="byok">🤖 Autopilot paused for a question that needs you</div>
+      <button class="primary-btn">▶ Resume auto-apply</button>
+    
+      </main>
+      <div class="perms"><span class="perms-label">Permissions</span><span class="perm">activeTab</span><span class="perm">storage</span><span class="perm">scripting</span><span class="perm">*://*.workday.com/*</span><span class="perm">*://*.myworkdayjobs.com/*</span></div>
+      <div class="footer">v0.1.0 · Chrome Extension</div>
+    </div>
+  </div>
+</body>
+</html>

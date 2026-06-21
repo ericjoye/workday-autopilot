@@ -1,0 +1,426 @@
+/**
+ * @fileoverview Options page for Workday Autopilot.
+ * License management, tier display, usage stats, and plan comparison.
+ * Dark theme matching popup.
+ * @author Builder Agent
+ * @date 2026-06-18
+ */
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Workday Autopilot — Settings</title>
+  <style>
+    /* ── Reset & Base ─────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0f0f0f;
+      color: #e0e0e0;
+      min-height: 100vh;
+      padding: 32px 24px;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    /* ── Header ───────────────────────────────────────────────────── */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 32px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #1a1a2e;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-left .logo { font-size: 28px; }
+
+    .header-left h1 {
+      font-size: 20px;
+      font-weight: 700;
+      color: #e0e0e0;
+    }
+
+    .version {
+      font-size: 12px;
+      color: #666;
+      background: #1a1a2e;
+      padding: 4px 10px;
+      border-radius: 12px;
+    }
+
+    /* ── Cards ────────────────────────────────────────────────────── */
+    .card {
+      background: #1a1a2e;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 20px;
+      border: 1px solid #2a2a3e;
+    }
+
+    .card h2 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #e0e0e0;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ── License Section ──────────────────────────────────────────── */
+    .license-form {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .license-form input[type="text"] {
+      flex: 1;
+      padding: 10px 14px;
+      background: #0f0f0f;
+      border: 1px solid #2a2a3e;
+      border-radius: 8px;
+      color: #e0e0e0;
+      font-size: 14px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      transition: border-color 0.2s;
+    }
+
+    .license-form input[type="text"]:focus {
+      outline: none;
+      border-color: #3b82f6;
+    }
+
+    .license-form input[type="text"]::placeholder {
+      color: #555;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+
+    .btn-primary {
+      padding: 10px 20px;
+      background: #3b82f6;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      white-space: nowrap;
+    }
+
+    .btn-primary:hover { background: #2563eb; }
+    .btn-primary:active { transform: scale(0.97); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .license-message {
+      font-size: 13px;
+      min-height: 20px;
+      margin-top: 8px;
+    }
+
+    .license-message.success { color: #22c55e; }
+    .license-message.error { color: #ef4444; }
+
+    .current-license {
+      font-size: 13px;
+      color: #888;
+      margin-top: 8px;
+    }
+
+    .current-license code {
+      background: #0f0f0f;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      color: #3b82f6;
+    }
+
+    /* ── Tier Status ──────────────────────────────────────────────── */
+    .tier-status {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px;
+      background: #0f0f0f;
+      border-radius: 8px;
+      margin-bottom: 12px;
+    }
+
+    .tier-status-label {
+      font-size: 13px;
+      color: #888;
+    }
+
+    .tier-status-value {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .tier-free { color: #e0e0e0; }
+    .tier-pro { color: #3b82f6; }
+    .tier-team { color: #22c55e; }
+
+    .usage-bar-container {
+      margin-top: 12px;
+    }
+
+    .usage-bar-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 6px;
+    }
+
+    .usage-bar {
+      height: 6px;
+      background: #0f0f0f;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .usage-bar-fill {
+      height: 100%;
+      background: #3b82f6;
+      border-radius: 3px;
+      transition: width 0.3s ease;
+    }
+
+    .usage-bar-fill.full {
+      background: #ef4444;
+    }
+
+    /* ── Tier Comparison Table ─────────────────────────────────────── */
+    .tier-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+    }
+
+    .tier-table th,
+    .tier-table td {
+      padding: 12px 16px;
+      text-align: center;
+      font-size: 13px;
+      border-bottom: 1px solid #2a2a3e;
+    }
+
+    .tier-table th {
+      color: #888;
+      font-weight: 500;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .tier-table th:first-child,
+    .tier-table td:first-child {
+      text-align: left;
+    }
+
+    .tier-table td:first-child {
+      color: #e0e0e0;
+    }
+
+    .tier-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .tier-table .check { color: #22c55e; font-size: 16px; }
+    .tier-table .cross { color: #555; font-size: 16px; }
+
+    .tier-name-cell {
+      font-weight: 600;
+    }
+
+    .tier-price-cell {
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .tier-table tr.current-tier {
+      background: rgba(59, 130, 246, 0.08);
+    }
+
+    .tier-table tr.current-tier td:first-child::before {
+      content: '● ';
+      color: #3b82f6;
+    }
+
+    /* ── Feature list ─────────────────────────────────────────────── */
+    .feature-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .feature-list li {
+      padding: 8px 0;
+      font-size: 13px;
+      color: #ccc;
+      border-bottom: 1px solid #2a2a3e;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .feature-list li:last-child { border-bottom: none; }
+
+    .feature-list li .icon { font-size: 14px; }
+
+    /* ── Footer ────────────────────────────────────────────────────── */
+    .footer {
+      text-align: center;
+      margin-top: 32px;
+      padding-top: 16px;
+      border-top: 1px solid #1a2a3e;
+      font-size: 12px;
+      color: #555;
+    }
+
+    /* ── Responsive ────────────────────────────────────────────────── */
+    @media (max-width: 500px) {
+      body { padding: 16px 12px; }
+      .license-form { flex-direction: column; }
+      .tier-status { flex-direction: column; gap: 8px; }
+      .tier-table th, .tier-table td { padding: 8px 6px; font-size: 11px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <span class="logo">🚀</span>
+        <h1>Workday Autopilot</h1>
+      </div>
+      <span class="version">v0.1</span>
+    </header>
+
+    <!-- License Card -->
+    <div class="card">
+      <h2>🔑 License</h2>
+      <div class="license-form">
+        <input type="text" id="licenseInput" placeholder="PRO-XXXX-XXXX or TEAM-XXXX-XXXX" maxlength="16">
+        <button class="btn-primary" id="btnActivate">Activate</button>
+      </div>
+      <div class="license-message" id="licenseMessage"></div>
+      <div class="current-license" id="currentLicenseDisplay"></div>
+    </div>
+
+    <!-- Current Tier Card -->
+    <div class="card">
+      <h2>📊 Current Plan</h2>
+      <div class="tier-status">
+        <div>
+          <div class="tier-status-label">Your Plan</div>
+          <div class="tier-status-value" id="currentTierValue">Free</div>
+        </div>
+        <div>
+          <div class="tier-status-label">Submissions This Month</div>
+          <div class="tier-status-value" id="currentUsageValue">0 / 5</div>
+        </div>
+      </div>
+      <div class="usage-bar-container" id="usageBarContainer">
+        <div class="usage-bar-label">
+          <span>Usage</span>
+          <span id="usageBarText">0 of 5 used</span>
+        </div>
+        <div class="usage-bar">
+          <div class="usage-bar-fill" id="usageBarFill" style="width: 0%"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tier Comparison Card -->
+    <div class="card">
+      <h2>💎 Plans &amp; Features</h2>
+      <table class="tier-table" id="tierTable">
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>Free</th>
+            <th>Pro</th>
+            <th>Team</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Price</td>
+            <td class="tier-price-cell">$0</td>
+            <td class="tier-price-cell">$14.99</td>
+            <td class="tier-price-cell">$29</td>
+          </tr>
+          <tr>
+            <td>Submissions</td>
+            <td>5 / month</td>
+            <td>Unlimited</td>
+            <td>Unlimited</td>
+          </tr>
+          <tr>
+            <td>Auto-fill</td>
+            <td class="check">✓</td>
+            <td class="check">✓</td>
+            <td class="check">✓</td>
+          </tr>
+          <tr>
+            <td>Auto-submit</td>
+            <td class="cross">—</td>
+            <td class="check">✓</td>
+            <td class="check">✓</td>
+          </tr>
+          <tr>
+            <td>Profiles</td>
+            <td>1</td>
+            <td>1</td>
+            <td>Multi</td>
+          </tr>
+          <tr>
+            <td>Team Management</td>
+            <td class="cross">—</td>
+            <td class="cross">—</td>
+            <td class="check">✓</td>
+          </tr>
+          <tr>
+            <td>API Access</td>
+            <td class="cross">—</td>
+            <td class="cross">—</td>
+            <td class="check">✓</td>
+          </tr>
+          <tr>
+            <td>Priority Support</td>
+            <td class="cross">—</td>
+            <td class="check">✓</td>
+            <td class="check">✓</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      Workday Autopilot v0.1 · Built with ❤️
+    </footer>
+  </div>
+
+  <script src="../utils/tier-manager.js"></script>
+  <script src="options.js"></script>
+</body>
+</html>

@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Workday Autopilot — Screenshot Mockup</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0f0f1a;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    padding: 40px;
+  }
+  .browser-chrome {
+    width: 860px;
+    background: #1a1a2e;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.6);
+  }
+  .browser-bar {
+    background: #16161e;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .browser-dots { display: flex; gap: 6px; }
+  .browser-dots span { width: 12px; height: 12px; border-radius: 50%; }
+  .dot-red { background: #ff5f57; }
+  .dot-yellow { background: #febc2e; }
+  .dot-green { background: #28c840; }
+  .browser-url {
+    flex: 1;
+    background: #0f0f1a;
+    border-radius: 8px;
+    padding: 6px 14px;
+    color: #8888a0;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .ext-icon {
+    width: 20px; height: 20px;
+    background: linear-gradient(135deg, #06b6d4, #3b82f6);
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; color: white; font-weight: bold;
+  }
+  .page-bg {
+    background: #f5f5f5;
+    padding: 20px 30px;
+    position: relative;
+    min-height: 100px;
+  }
+  .page-bg h1 { color: #1a1a2e; font-size: 18px; }
+  /* Extension Popup */
+  .ext-popup {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 400px;
+    max-height: 540px;
+    background: #1e1e2e;
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.08);
+    overflow: hidden;
+    animation: popIn 0.2s ease-out;
+  }
+  @keyframes popIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  .popup-header {
+    background: linear-gradient(135deg, #0e7490, #06b6d4);
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .popup-header .icon {
+    width: 28px; height: 28px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+  }
+  .popup-header .title {
+    color: white;
+    font-size: 15px;
+    font-weight: 700;
+    flex: 1;
+  }
+  .popup-header .badge {
+    background: rgba(255,255,255,0.2);
+    color: white;
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 600;
+  }
+  .profile-bar {
+    padding: 10px 16px;
+    background: #16161e;
+    border-bottom: 1px solid #2a2a3c;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .profile-bar .avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #06b6d4, #3b82f6);
+    display: flex; align-items: center; justify-content: center;
+    color: white;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .profile-bar .info { flex: 1; }
+  .profile-bar .name { font-size: 13px; color: #e4e4e7; font-weight: 600; }
+  .profile-bar .email { font-size: 11px; color: #666; }
+  .profile-bar .edit-btn {
+    background: #2a2a3c;
+    color: #a1a1aa;
+    border: none;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    cursor: pointer;
+  }
+  .popup-body {
+    padding: 14px 16px;
+    max-height: 380px;
+    overflow-y: auto;
+  }
+  .popup-body::-webkit-scrollbar { width: 4px; }
+  .popup-body::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+  .stats-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .stat-pill {
+    flex: 1;
+    background: #16161e;
+    border-radius: 8px;
+    padding: 8px 10px;
+    text-align: center;
+    border: 1px solid #2a2a3c;
+  }
+  .stat-pill .num { font-size: 18px; font-weight: 800; color: #e4e4e7; }
+  .stat-pill .label { font-size: 10px; color: #666; margin-top: 2px; }
+  .stat-pill.pending .num { color: #f59e0b; }
+  .stat-pill.submitted .num { color: #22c55e; }
+  .section-title {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #666;
+    margin-bottom: 8px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .section-title .see-all {
+    font-size: 10px;
+    color: #06b6d4;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  .app-card {
+    background: #16161e;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 8px;
+    border: 1px solid #2a2a3c;
+  }
+  .app-card .app-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .app-card .app-icon {
+    width: 28px; height: 28px;
+    background: #2a2a3c;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+  }
+  .app-card .app-info { flex: 1; }
+  .app-card .app-title { font-size: 12px; color: #e4e4e7; font-weight: 600; }
+  .app-card .app-company { font-size: 11px; color: #666; }
+  .app-card .status-badge {
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 600;
+  }
+  .status-badge.ready { background: rgba(34,197,94,0.15); color: #22c55e; }
+  .status-badge.progress { background: rgba(245,158,11,0.15); color: #f59e0b; }
+  .status-badge.submitted { background: rgba(59,130,246,0.15); color: #3b82f6; }
+  .app-card .progress-bar {
+    height: 4px;
+    background: #2a2a3c;
+    border-radius: 2px;
+    margin-bottom: 8px;
+    overflow: hidden;
+  }
+  .app-card .progress-bar .fill {
+    height: 100%;
+    border-radius: 2px;
+    background: #f59e0b;
+  }
+  .app-card .progress-bar .fill.complete { background: #22c55e; }
+  .app-card .app-actions {
+    display: flex;
+    gap: 6px;
+  }
+  .app-card .app-actions button {
+    flex: 1;
+    padding: 6px;
+    border-radius: 6px;
+    border: none;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .app-card .app-actions .btn-review { background: #2a2a3c; color: #a1a1aa; }
+  .app-card .app-actions .btn-submit { background: #06b6d4; color: white; }
+  .app-card .app-actions .btn-continue { background: #f59e0b; color: #000; }
+  .popup-footer {
+    padding: 10px 16px;
+    background: #16161e;
+    border-top: 1px solid #2a2a3c;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .popup-footer .tier {
+    font-size: 11px;
+    color: #666;
+  }
+  .popup-footer .upgrade {
+    font-size: 11px;
+    color: #f59e0b;
+    cursor: pointer;
+    font-weight: 600;
+  }
+</style>
+</head>
+<body>
+<div class="browser-chrome">
+  <div class="browser-bar">
+    <div class="browser-dots">
+      <span class="dot-red"></span>
+      <span class="dot-yellow"></span>
+      <span class="dot-green"></span>
+    </div>
+    <div class="browser-url">
+      <span>🔒</span>
+      <span>acme.wd1.myworkdayjobs.com/en-US/careers/job/Software-Engineer_R12345</span>
+    </div>
+    <div class="ext-icon">W</div>
+  </div>
+  <div class="page-bg">
+    <h1>Software Engineer — Acme Corp</h1>
+
+    <div class="ext-popup">
+      <div class="popup-header">
+        <div class="icon">🚀</div>
+        <div class="title">Workday Autopilot</div>
+        <div class="badge">Free</div>
+      </div>
+      <div class="profile-bar">
+        <div class="avatar">JD</div>
+        <div class="info">
+          <div class="name">John Doe</div>
+          <div class="email">john.doe@email.com</div>
+        </div>
+        <button class="edit-btn">Edit</button>
+      </div>
+      <div class="popup-body">
+        <div class="stats-row">
+          <div class="stat-pill pending">
+            <div class="num">3</div>
+            <div class="label">Pending</div>
+          </div>
+          <div class="stat-pill submitted">
+            <div class="num">1</div>
+            <div class="label">Submitted</div>
+          </div>
+          <div class="stat-pill">
+            <div class="num">12</div>
+            <div class="label">Total</div>
+          </div>
+        </div>
+
+        <div class="section-title">
+          Recent Applications
+          <span class="see-all">See All →</span>
+        </div>
+
+        <div class="app-card">
+          <div class="app-header">
+            <div class="app-icon">🏢</div>
+            <div class="app-info">
+              <div class="app-title">Software Engineer</div>
+              <div class="app-company">Acme Corp · San Francisco, CA</div>
+            </div>
+            <span class="status-badge ready">Ready</span>
+          </div>
+          <div class="progress-bar">
+            <div class="fill complete" style="width: 100%;"></div>
+          </div>
+          <div class="app-actions">
+            <button class="btn-review">Review</button>
+            <button class="btn-submit">Submit</button>
+          </div>
+        </div>
+
+        <div class="app-card">
+          <div class="app-header">
+            <div class="app-icon">🔧</div>
+            <div class="app-info">
+              <div class="app-title">Data Engineer</div>
+              <div class="app-company">TechCo · Remote</div>
+            </div>
+            <span class="status-badge progress">67%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="fill" style="width: 67%;"></div>
+          </div>
+          <div class="app-actions">
+            <button class="btn-continue">Continue</button>
+          </div>
+        </div>
+
+        <div class="app-card">
+          <div class="app-header">
+            <div class="app-icon">📊</div>
+            <div class="app-info">
+              <div class="app-title">ML Engineer</div>
+              <div class="app-company">DataFlow Inc · New York, NY</div>
+            </div>
+            <span class="status-badge submitted">Submitted</span>
+          </div>
+          <div class="progress-bar">
+            <div class="fill complete" style="width: 100%;"></div>
+          </div>
+        </div>
+      </div>
+      <div class="popup-footer">
+        <span class="tier">Free tier · 5 applications/mo</span>
+        <span class="upgrade">⭐ Upgrade to Pro</span>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

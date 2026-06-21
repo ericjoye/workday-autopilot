@@ -1,0 +1,94 @@
+/**
+ * @fileoverview Content styles for Workday Autopilot.
+ * Dark theme matching ScrapeFlow design system.
+ * Toast notifications, field highlights, and upgrade banner animations.
+ * @author Builder Agent
+ * @date 2026-06-18
+ */
+
+/* ── CSS Variables ─────────────────────────────────────────────────── */
+:root {
+  --wa-bg-primary: #0f0f0f;
+  --wa-bg-secondary: #1a1a2e;
+  --wa-bg-tertiary: #16213e;
+  --wa-accent: #3b82f6;
+  --wa-accent-hover: #2563eb;
+  --wa-success: #22c55e;
+  --wa-warning: #f59e0b;
+  --wa-error: #ef4444;
+  --wa-text-primary: #f1f5f9;
+  --wa-text-secondary: #94a3b8;
+  --wa-border: #334155;
+}
+
+/* ── Filled Field Highlight ─────────────────────────────────────────── */
+.wa-filled {
+  outline: 2px solid var(--wa-success) !important;
+  outline-offset: 1px !important;
+  border-color: var(--wa-success) !important;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.15) !important;
+  transition: all 0.2s ease !important;
+}
+
+.wa-filled:focus {
+  outline: 2px solid var(--wa-accent) !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
+}
+
+/* ── Toast Animations ───────────────────────────────────────────────── */
+@keyframes wa-toast-in {
+  from {
+    opacity: 0;
+    transform: translateX(100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes wa-toast-out {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100px);
+  }
+}
+
+/* ── Banner Animation ───────────────────────────────────────────────── */
+@keyframes wa-banner-in {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Autopilot Button Hover Glow ────────────────────────────────────── */
+#wa-autopilot-btn:active {
+  transform: scale(0.96) !important;
+}
+
+/* ── Scrollbar Styling (for any WA injected UI) ─────────────────────── */
+.wa-ui ::-webkit-scrollbar {
+  width: 6px;
+}
+
+.wa-ui ::-webkit-scrollbar-track {
+  background: var(--wa-bg-primary);
+}
+
+.wa-ui ::-webkit-scrollbar-thumb {
+  background: var(--wa-border);
+  border-radius: 3px;
+}
+
+.wa-ui ::-webkit-scrollbar-thumb:hover {
+  background: var(--wa-text-secondary);
+}

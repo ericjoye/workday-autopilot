@@ -1,0 +1,177 @@
+/**
+ * @fileoverview Popup HTML for Workday Autopilot.
+ * Profile editor, tier display, and license activation.
+ * Dark theme, 360px width.
+ * @author Builder Agent
+ * @date 2026-06-18
+ */
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Workday Autopilot</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup-container">
+    <!-- Header -->
+    <header class="popup-header">
+      <div class="header-left">
+        <span class="logo">🚀</span>
+        <h1>Workday Autopilot</h1>
+      </div>
+      <span class="version">v0.1</span>
+    </header>
+
+    <!-- Tier Status Bar -->
+    <div class="tier-bar" id="tier-bar">
+      <div class="tier-info">
+        <span class="tier-badge" id="tier-badge">Free</span>
+        <span class="tier-usage" id="tier-usage">0/5 submissions</span>
+      </div>
+      <button class="btn-upgrade-small" id="btn-upgrade">Upgrade</button>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <nav class="tabs">
+      <button class="tab active" data-tab="profile">Profile</button>
+      <button class="tab" data-tab="license">License</button>
+    </nav>
+
+    <!-- Profile Tab -->
+    <div class="tab-content active" id="tab-profile">
+      <form id="profile-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="firstName">First Name</label>
+            <input type="text" id="firstName" name="firstName" placeholder="John" autocomplete="given-name">
+          </div>
+          <div class="form-group">
+            <label for="lastName">Last Name</label>
+            <input type="text" id="lastName" name="lastName" placeholder="Doe" autocomplete="family-name">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" placeholder="john@example.com" autocomplete="email">
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Phone</label>
+          <input type="tel" id="phone" name="phone" placeholder="+1 (555) 123-4567" autocomplete="tel">
+        </div>
+
+        <div class="form-group">
+          <label for="address">Street Address</label>
+          <input type="text" id="address" name="address" placeholder="123 Main St" autocomplete="street-address">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="city">City</label>
+            <input type="text" id="city" name="city" placeholder="San Francisco" autocomplete="address-level2">
+          </div>
+          <div class="form-group form-group-sm">
+            <label for="state">State</label>
+            <input type="text" id="state" name="state" placeholder="CA" autocomplete="address-level1" maxlength="2">
+          </div>
+          <div class="form-group form-group-sm">
+            <label for="zip">ZIP</label>
+            <input type="text" id="zip" name="zip" placeholder="94102" autocomplete="postal-code">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="linkedinUrl">LinkedIn URL</label>
+          <input type="url" id="linkedinUrl" name="linkedinUrl" placeholder="https://linkedin.com/in/johndoe">
+        </div>
+
+        <div class="form-group">
+          <label for="resumeUrl">Resume URL</label>
+          <input type="url" id="resumeUrl" name="resumeUrl" placeholder="https://drive.google.com/...">
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-primary" id="btn-save-profile">
+            <span class="btn-icon">💾</span> Save Profile
+          </button>
+        </div>
+      </form>
+
+      <div class="work-exp-section">
+        <h3>Work Experience</h3>
+        <div id="work-exp-list"></div>
+        <button class="btn-secondary btn-sm" id="btn-add-exp">+ Add Experience</button>
+      </div>
+    </div>
+
+    <!-- License Tab -->
+    <div class="tab-content" id="tab-license">
+      <div class="license-section">
+        <h3>Activate License</h3>
+        <p class="license-hint">Enter your license key to unlock Pro or Team features.</p>
+
+        <div class="form-group">
+          <label for="licenseKey">License Key</label>
+          <input type="text" id="licenseKey" name="licenseKey" placeholder="PRO-XXXX-XXXX" style="text-transform: uppercase; letter-spacing: 1px;">
+        </div>
+
+        <button class="btn-primary" id="btn-activate-license">
+          <span class="btn-icon">🔑</span> Activate
+        </button>
+
+        <div class="license-result" id="license-result"></div>
+      </div>
+
+      <!-- Tier Comparison -->
+      <div class="tier-comparison">
+        <h3>Plans</h3>
+        <div class="tier-cards">
+          <div class="tier-card" data-tier="free">
+            <div class="tier-name">Free</div>
+            <div class="tier-price">$0<span>/mo</span></div>
+            <ul class="tier-features">
+              <li>5 submissions/month</li>
+              <li>Basic auto-fill</li>
+              <li>Single profile</li>
+            </ul>
+          </div>
+          <div class="tier-card featured" data-tier="pro">
+            <div class="tier-badge-popular">Popular</div>
+            <div class="tier-name">Pro</div>
+            <div class="tier-price">$14.99<span>/mo</span></div>
+            <ul class="tier-features">
+              <li>Unlimited submissions</li>
+              <li>Advanced auto-fill</li>
+              <li>Auto-submit</li>
+              <li>Priority support</li>
+            </ul>
+          </div>
+          <div class="tier-card" data-tier="team">
+            <div class="tier-name">Team</div>
+            <div class="tier-price">$29<span>/mo</span></div>
+            <ul class="tier-features">
+              <li>Everything in Pro</li>
+              <li>Multi-profile</li>
+              <li>Team management</li>
+              <li>API access</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="popup-footer">
+      <a href="#" id="link-options">Settings</a>
+      <span class="separator">•</span>
+      <span class="status-text" id="status-text">Ready</span>
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
